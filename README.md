@@ -25,6 +25,7 @@ num_points = 25             # number of points we are looking for
 num_iterations = 16         # number of iterations in which we take average minimum squared distances between points and try to maximize them
 first_point_zero = disk     # should be first point zero (useful if we already have such sample) or random
 iterations_per_point = 64   # iterations per point trying to look for a new point with larger distance
+sorting_buckets = 0         # if this option is > 0, then sequence will be optimized for tiled cache locality in n x n tiles (x followed by y)
 ```
 
 ### Requirements
