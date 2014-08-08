@@ -5,7 +5,7 @@ Simple Poisson-like distribution generator for various rendering scenarios and s
 
 Unlike other simple Poisson generator this one has various options suited specifically for rendering scenarios.
 It outputs ready-to-use patterns for both hlsl and C++ code.
-It plots pattern on a very simple graphs.
+It plots pattern on very simple graphs.
 
 Generated sequence has properties of maximizing distance for every next point from previous points in sequence. Therefore you can use partial sequences (for example only half or a few samples based on branching) and have proper sampling function variance. It could be useful for various importance sampling and temporal refinement scenarios.
 
