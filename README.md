@@ -9,6 +9,8 @@ It plots pattern on very simple graphs.
 
 Generated sequence has properties of maximizing distance for every next point from previous points in sequence. Therefore you can use partial sequences (for example only half or a few samples based on branching) and have proper sampling function variance. It could be useful for various importance sampling and temporal refinement scenarios.
 
+I also added an option to sort sequence for tiled cache locality if we plan to use a fixed, large number of samples and sample a large area.
+
 ### Usage 
 
 Just edit the options and execute script: `python poisson.py`
