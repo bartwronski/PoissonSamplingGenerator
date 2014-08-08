@@ -7,6 +7,8 @@ Unlike other simple Poisson generator this one has various options suited specif
 It outputs ready-to-use patterns for both hlsl and C++ code.
 It plots pattern on a very simple graphs.
 
+Generated sequence has properties of maximizing distance for every next point from previous points in sequence. Therefore you can use partial sequences (for example only half or a few samples based on branching) and have proper sampling function variance. It could be useful for various importance sampling and temporal refinement scenarios.
+
 ### Usage 
 
 Just edit the options and execute script: `python poisson.py`
