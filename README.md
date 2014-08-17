@@ -2,6 +2,7 @@ PoissonSamplingGenerator
 ========================
 
 Simple Poisson-like distribution generator for various rendering scenarios and sampling (disk, square, grid, repeating grid).
+It supports both 2D and 3D variant of distribution to make sampling easier also in volumetric case.
 
 Unlike other simple Poisson generator this one has various options suited specifically for rendering scenarios.
 It outputs ready-to-use patterns for both hlsl and C++ code.
@@ -28,6 +29,7 @@ num_iterations = 16         # number of iterations in which we take average mini
 first_point_zero = disk     # should be first point zero (useful if we already have such sample) or random
 iterations_per_point = 64   # iterations per point trying to look for a new point with larger distance
 sorting_buckets = 0         # if this option is > 0, then sequence will be optimized for tiled cache locality in n x n tiles (x followed by y)
+three_dim = False           # 3dimensional version
 ```
 
 ### Requirements
