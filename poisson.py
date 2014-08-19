@@ -9,13 +9,13 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # user defined options
 disk = False                # this parameter defines if we look for Poisson-like distribution on a disk/sphere (center at 0, radius 1) or in a square/box (0-1 on x and y)
-squareRepeatPattern = True  # this parameter defines if we look for "repeating" pattern so if we should maximize distances also with pattern repetitions
+repeatPattern = True        # this parameter defines if we look for "repeating" pattern so if we should maximize distances also with pattern repetitions
 num_points = 25             # number of points we are looking for
 num_iterations = 16         # number of iterations in which we take average minimum squared distances between points and try to maximize them
 first_point_zero = disk     # should be first point zero (useful if we already have such sample) or random
 iterations_per_point = 64   # iterations per point trying to look for a new point with larger distance
 sorting_buckets = 0         # if this option is > 0, then sequence will be optimized for tiled cache locality in n x n tiles (x followed by y)
-three_dim = False           # 3dimensional version
+num_dim = 2                 # 1, 2, 3 dimensional version
 
 def random_point_disk():
     alpha = random.random() * math.pi * 2.0
@@ -32,6 +32,10 @@ def random_point_sphere():
     y = math.sin(theta) * math.sin(phi) * radius
     z = math.cos(phi) * radius
     return np.array([x,y,z])
+
+def random_point_line():
+    x = random.random()
+    return np.array([x])
 
 def random_point_square():
     x = random.random()
@@ -53,6 +57,14 @@ def first_point():
 def min_dist_squared_pure(points, point):
     diff = points - np.array([point])
     return np.min(np.einsum('ij,ij->i',diff,diff))
+
+def min_dist_squared_line_repeat(points, point):
+    dist = math.sqrt(1.0)
+    for x in range(-1,2):
+        testing_point = np.array([point-[x]])
+        diff = points-testing_point
+        dist = min(np.min(np.einsum('ij,ij->i',diff,diff)),dist)
+    return dist
 
 def min_dist_squared_repeat(points, point):
     dist = math.sqrt(2.0)
@@ -87,7 +99,7 @@ def find_next_point(current_points):
 
 def find_point_set(num_points, num_iter):
     best_point_set = []
-    best_dist_avg = num_points*math.sqrt(float(num_dim))
+    best_dist_avg = 0
     for i in range(num_iter):
         points = np.array([first_point()])
         for i in range(num_points-1):
@@ -96,15 +108,14 @@ def find_point_set(num_points, num_iter):
         for i in range(num_points):
             dist = min_dist_squared(np.delete(points,i,0), points[i])
             current_set_dist += dist
-        if current_set_dist < best_dist_avg:
+        if current_set_dist > best_dist_avg:
             best_dist_avg = current_set_dist
             best_point_set = points
     return best_point_set
 
-if three_dim:
-    num_dim = 3
+if num_dim == 3:
     zero_point = [0,0,0]
-    if disk == False and squareRepeatPattern == True:
+    if disk == False and repeatPattern == True:
         min_dist_squared = min_dist_squared_repeat_3D
     else:
         min_dist_squared = min_dist_squared_pure
@@ -112,10 +123,9 @@ if three_dim:
         random_point = random_point_sphere
     else:
         random_point = random_point_box
-else:
-    num_dim = 2 
+elif num_dim == 2:
     zero_point = [0,0]
-    if disk == False and squareRepeatPattern == True:
+    if disk == False and repeatPattern == True:
         min_dist_squared = min_dist_squared_repeat
     else:
         min_dist_squared = min_dist_squared_pure
@@ -123,12 +133,19 @@ else:
         random_point = random_point_disk
     else:
         random_point = random_point_square
+else:
+    zero_point = [0]
+    if repeatPattern == True:
+        min_dist_squared = min_dist_squared_line_repeat
+    else:
+        min_dist_squared = min_dist_squared_pure
+    random_point = random_point_line
 
 points = find_point_set(num_points,num_iterations)
 
-if three_dim:
+if num_dim == 3:
     if sorting_buckets > 0:
-        points_discretized = np.floor(points * [sorting_buckets,-sorting_buckets])
+        points_discretized = np.floor(points * [sorting_buckets,-sorting_buckets, sorting_buckets])
         # we multiply in following line by 2 because of -1,1 potential range
         indices_cache_space = np.array(points_discretized[:,2] * sorting_buckets * 4 + points_discretized[:,1] * sorting_buckets * 2 + points_discretized[:,0])
         points = points[np.argsort(indices_cache_space)]
@@ -167,13 +184,26 @@ if three_dim:
         ax.set_xlim(-1,1)
         ax.set_ylim(-1,1)
         ax.set_zlim(-1,1)
+    elif repeatPattern == True:
+        ax.scatter(points[:,0], points[:,1], points[:,2] + 1, c='b')
+        ax.scatter(points[:,0], points[:,1] + 1, points[:,2] + 1, c='b')
+        ax.scatter(points[:,0] + 1, points[:,1] + 1, points[:,2] + 1, c='b')
+        ax.scatter(points[:,0] + 1, points[:,1], points[:,2] + 1, c='b')
+        ax.scatter(points[:,0], points[:,1] + 1, points[:,2], c='b')
+        ax.scatter(points[:,0] + 1, points[:,1] + 1, points[:,2], c='b')
+        ax.scatter(points[:,0] + 1, points[:,1], points[:,2], c='b')
+        ax.set_xlim(0,2)
+        ax.set_ylim(0,2)
+        ax.set_zlim(0,2)
     else:
         ax.set_xlim(0,1)
         ax.set_ylim(0,1)
         ax.set_zlim(0,1)
-    ax.scatter(points[:,0], points[:,1], points[:,2], c='g')
+
+
+    ax.scatter(points[:,0], points[:,1], points[:,2], c='r')
     pylab.show()    
-else:
+elif num_dim == 2:
     if sorting_buckets > 0:
         points_discretized = np.floor(points * [sorting_buckets,-sorting_buckets])
         # we multiply in following line by 2 because of -1,1 potential range
@@ -202,5 +232,36 @@ else:
         x = np.cos(param)
         y = np.sin(param)
         pylab.plot(x, y, 'b-')    
-    pylab.plot(points[:,0], points[:,1], 'go')
+    elif repeatPattern == True:
+        pylab.plot(points[:,0] + 1, points[:,1], 'bo')
+        pylab.plot(points[:,0] + 1, points[:,1] + 1, 'bo')
+        pylab.plot(points[:,0], points[:,1] + 1, 'bo')
+    pylab.plot(points[:,0], points[:,1], 'ro')
+    pylab.show()
+else:
+    if sorting_buckets > 0:
+        points_discretized = np.floor(points * [sorting_buckets])
+        indices_cache_space = np.array(points_discretized[:,0])
+        points = points[np.argsort(indices_cache_space)]
+    
+    print("// hlsl array")
+    print("static const uint SAMPLE_NUM = " + str(num_points) + ";")
+    print("static const float POISSON_SAMPLES[SAMPLE_NUM] = ")
+    print("{")
+    for p in points:
+        print(str(p[0]) + "f, ")
+    print("};")
+    
+    print("// C++ array")
+    print("const int SAMPLE_NUM = " + str(num_points) + ";")
+    print("const float POISSON_SAMPLES[SAMPLE_NUM] = ")
+    print("{")
+    for p in points:
+        print(str(p[0]) + "f, ")
+    print("};")
+    
+    pylab.figure(figsize=(10,2))
+    pylab.plot(points[:,0], [0] * num_points, 'ro')
+    if repeatPattern == True:
+        pylab.plot(points[:,0] + 1, [0] * num_points, 'bo')
     pylab.show()
