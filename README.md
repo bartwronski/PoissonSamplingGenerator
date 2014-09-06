@@ -1,7 +1,9 @@
 PoissonSamplingGenerator
 ========================
 
-Simple Poisson-like distribution generator for various rendering scenarios and sampling (disk, square, grid, repeating grid).
+![Poisson generator screenshot](/poisson.jpg)
+
+Simple Poisson-like distribution generator for various rendering scenarios and sampling (disk, square, grid, repeating grid, rotating disk).
 It supports 1D, 2D and 3D variant of distribution to make sampling easier also in volumetric case.
 
 Unlike other simple Poisson generator this one has various options suited specifically for rendering scenarios.
@@ -15,7 +17,13 @@ I also added an option to sort sequence for tiled cache locality if we plan to u
 
 ### Usage 
 
-Just edit the options and execute script: `python poisson.py`
+There are two ways of using this script:
+
+#### Using GUI
+Just launch the script: `python main_gui.py`
+
+#### Using commandline
+Just edit the options in main.py and execute script: `python main.py`
 
 ### Options
 
@@ -31,11 +39,13 @@ first_point_zero = disk     # should be first point zero (useful if we already h
 iterations_per_point = 64   # iterations per point trying to look for a new point with larger distance
 sorting_buckets = 0         # if this option is > 0, then sequence will be optimized for tiled cache locality in n x n tiles (x followed by y)
 num_dim = 2                 # 1, 2, 3 dimensional version
+num_rotations = 1           # number of rotations of disk pattern to check against
 ```
 
 ### Requirements
 
 This simple script requires some scientific Python environment like Anaconda or WinPython. Tested with Anaconda.
+Anaconda contains PyQT4, so it should be easy to use with GUI as well. Tested on Windows and Mac OSX.
 
 ### Author
 Bartlomiej "Bart" Wronski
