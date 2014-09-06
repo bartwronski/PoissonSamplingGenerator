@@ -25,7 +25,7 @@ Just launch the script: `python main_gui.py`
 #### Using commandline
 Just edit the options in main.py and execute script: `python main.py`
 
-### Options
+##### Options for commandline
 
 Options are edited in code (I use it in Sublime Text and always launch as script, so sorry - no commandline parsing) and are self-describing.
 
