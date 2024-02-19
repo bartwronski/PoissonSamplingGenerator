@@ -4,19 +4,19 @@ from poisson_ui import Ui_MainWindow
 import poisson
 
 from matplotlib.backends import qt_compat
-use_pyside = qt_compat.QT_API == qt_compat.QT_API_PYSIDE
+use_pyside = qt_compat.QT_API == qt_compat.QT_API_PYSIDE2
 if use_pyside:
-    from PySide import QtGui, QtCore
+    from PySide import QtGui, QtCore, QtWidgets
 else:
-    from PyQt4 import QtGui, QtCore
+    from PyQt6 import QtGui, QtCore, QtWidgets
 
 from numpy import arange, sin, pi
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-class ApplicationWindow(QtGui.QMainWindow):
+class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
@@ -25,8 +25,8 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.ui.plot_canvas.setParent(self.ui.widget)
         
         self.ui.plot_canvas.setSizePolicy(
-                                   QtGui.QSizePolicy.Expanding,
-                                   QtGui.QSizePolicy.Expanding)
+                                   QtWidgets.QSizePolicy.Policy.Expanding,
+                                   QtWidgets.QSizePolicy.Policy.Expanding)
         self.ui.plot_canvas.updateGeometry()
 
         self.ui.generateButton.clicked.connect(self.generate)
@@ -134,8 +134,8 @@ class TaskThread(QtCore.QThread):
         self.notifyProgress.emit(val)
 
 if __name__ == '__main__':
-    qApp = QtGui.QApplication(sys.argv)
+    qApp = QtWidgets.QApplication(sys.argv)
 
     aw = ApplicationWindow()
     aw.show()
-    sys.exit(qApp.exec_())
+    sys.exit(qApp.exec())
