@@ -187,7 +187,7 @@ class PoissonGenerator:
 
         return points_str_hlsl + points_str_cpp
 
-    def generate_ui(self, fig, points):
+    def generate_ui(self, fig, points, highlightFirst = 0):
         num_points = points.size // self.num_dim
 
         if self.num_dim == 3:
@@ -231,7 +231,8 @@ class PoissonGenerator:
                 ax.set_ylim(0,1)
                 ax.set_zlim(0,1)
 
-            ax.scatter(points[:,0], points[:,1], points[:,2], c='r')
+            ax.scatter(points[highlightFirst:,0], points[highlightFirst:,1], points[highlightFirst:,2], c='g')
+            ax.scatter(points[:highlightFirst,0], points[:highlightFirst,1], points[:highlightFirst,2], c='r')
         elif self.num_dim == 2:
             ax = fig.add_subplot(111)
             if self.disk == True:
@@ -252,10 +253,12 @@ class PoissonGenerator:
                 s, c = math.sin(rot_angle), math.cos(rot_angle)
                 rot_matrix = np.matrix([[c, -s], [s, c]])
                 points_permuted = np.array(np.dot(points, rot_matrix))
-                ax.plot(points_permuted[:,0], points_permuted[:,1], 'bo')                
-            ax.plot(points[:,0], points[:,1], 'ro')
+                ax.plot(points_permuted[:,0], points_permuted[:,1], 'bo')
+            ax.plot(points[:highlightFirst,0], points[:highlightFirst,1], 'go')
+            ax.plot(points[highlightFirst:,0], points[highlightFirst:,1], 'ro')
         else:
             ax = fig.add_subplot(111)
-            ax.plot(points[:,0], [0] * num_points, 'ro')
+            ax.plot(points[:highlightFirst,0], [0] * num_points, 'go')
+            ax.plot(points[highlightFirst:,0], [0] * num_points, 'ro')
             if self.repeatPattern == True:
                 ax.plot(points[:,0] + 1, [0] * num_points, 'bo')

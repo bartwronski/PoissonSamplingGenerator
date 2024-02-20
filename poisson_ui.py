@@ -105,6 +105,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.gridLayout)
         self.widget = QtWidgets.QWidget(parent=self.centralwidget)
         self.widget.setObjectName("widget")
+        self.highlightFirstSlider = QtWidgets.QSlider(parent=self.widget)
+        self.highlightFirstSlider.setGeometry(QtCore.QRect(9, 640, 451, 22))
+        self.highlightFirstSlider.setMaximum(8)
+        self.highlightFirstSlider.setProperty("value", 0)
+        self.highlightFirstSlider.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        self.highlightFirstSlider.setTickPosition(QtWidgets.QSlider.TickPosition.NoTicks)
+        self.highlightFirstSlider.setObjectName("highlightFirstSlider")
+        self.label_7 = QtWidgets.QLabel(parent=self.widget)
+        self.label_7.setGeometry(QtCore.QRect(470, 640, 41, 21))
+        self.label_7.setObjectName("label_7")
         self.horizontalLayout_2.addWidget(self.widget)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
@@ -133,6 +143,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.highlightFirstSlider.valueChanged['int'].connect(self.label_7.setNum) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -156,4 +167,5 @@ class Ui_MainWindow(object):
         self.label_6.setToolTip(_translate("MainWindow", "Works only in rotated disk mode - maximizes distances / variances num between rotations - to be used with rotated patterns"))
         self.label_6.setText(_translate("MainWindow", "Rotations as repetitions (num)"))
         self.rotationsAsRepetitions.setToolTip(_translate("MainWindow", "Works only in rotated disk mode - maximizes distances / variances num between rotations - to be used with rotated patterns"))
+        self.label_7.setText(_translate("MainWindow", "0"))
         self.generateButton.setText(_translate("MainWindow", "Generate"))
