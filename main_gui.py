@@ -35,6 +35,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.task.notifyProgress.connect(self.onProgress)
         self.taskStarted = False
 
+        self.ui.highlightFirstSlider.valueChanged.connect(self.redrawFigure)
+
+        self.points = None
+
     def generate(self):
         if self.taskStarted == True:
             return
@@ -91,6 +95,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         sorting_buckets = self.ui.cacheSortBucketsSpinBox.value()
         rotations = self.ui.rotationsAsRepetitions.value() if allow_rotations else 1
 
+        self.ui.highlightFirstSlider.setMaximum(num_points)
+
         poisson_generator = poisson.PoissonGenerator(num_dim, disk, repeatPattern, first_point_zero)
         self.task.poisson_generator = poisson_generator
         self.task.num_points = num_points
@@ -101,18 +107,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.task.start()
 
     def onFinished(self):
-        points = self.task.points
-        points = self.task.poisson_generator.cache_sort(points, self.task.sorting_buckets)
-        text_output = self.task.poisson_generator.format_points_string(points)
+        self.points = self.task.points
+        self.points = self.task.poisson_generator.cache_sort(self.points, self.task.sorting_buckets)
+        text_output = self.task.poisson_generator.format_points_string(self.points)
         print(text_output)
         self.ui.outputShaderCodeTextEdit.clear()
         self.ui.outputShaderCodeTextEdit.insertPlainText(text_output)
-        self.ui.figure.clear()
-        self.task.poisson_generator.generate_ui(self.ui.figure, points)
-        self.ui.plot_canvas.updateGeometry()
-        self.ui.plot_canvas.draw()
+        self.redrawFigure()
         self.ui.progressBar.setValue(1024)
         self.taskStarted = False
+
+    def redrawFigure(self):
+        if not self.points is None:
+            self.ui.figure.clear()
+            self.task.poisson_generator.generate_ui(self.ui.figure, self.points, self.ui.highlightFirstSlider.value())
+            self.ui.plot_canvas.updateGeometry()
+            self.ui.plot_canvas.draw()
 
     def onProgress(self, i):
         self.ui.progressBar.setValue(int(round(i * 1024)))
